@@ -228,6 +228,34 @@ function replaceNavigation(template) {
     .replace(/<nav aria-label="Main"\s+id="block-ucsf-main-menu-desktop"[\s\S]*?<\/nav>/, registrarDesktopNav());
 }
 
+function replaceHeaderLogo(template) {
+  const textLogo = `<figure class="header--logo logo registrar-text-logo">
+  <a class="logo__link registrar-text-logo__link" href="index.html" title="Office of the Registrar home" rel="home">
+    Office of the Registrar
+  </a>
+</figure>`;
+  return template.replace(/<figure class="header--logo logo">[\s\S]*?<\/figure>/, textLogo);
+}
+
+function injectRegistrarStyles(template) {
+  const css = `<style>
+.registrar-text-logo { margin: 0; }
+.registrar-text-logo__link {
+  color: #052049;
+  display: inline-block;
+  font-family: "Helvetica Neue", Arial, sans-serif;
+  font-size: clamp(24px, 3vw, 38px);
+  font-weight: 700;
+  line-height: 1.05;
+  max-width: 320px;
+  text-decoration: none;
+}
+.registrar-text-logo__link:hover,
+.registrar-text-logo__link:focus { text-decoration: underline; }
+</style>`;
+  return template.replace("</head>", `${css}\n</head>`);
+}
+
 function communicationShellPage(template, page) {
   const banner = `<header class="basic-header full-width-page-banner full-width-has-image ">
     <figure>
@@ -256,7 +284,7 @@ function communicationShellPage(template, page) {
   }
   const withRegistrarContent = `${template.slice(0, contentStart)}${banner}\n\n${body}\n${template.slice(contentEnd)}`;
   return absolutizeAssets(
-    replaceNavigation(withRegistrarContent)
+    injectRegistrarStyles(replaceHeaderLogo(replaceNavigation(withRegistrarContent)))
       .replace(/<title[^>]*>[\s\S]*?<\/title>/i, `<title>${esc(page.title)} | UC San Francisco</title>`)
       .replace(/Office of Communications/g, "Office of the Registrar")
       .replace(/<meta property="og:title" content="[^"]*"/i, `<meta property="og:title" content="${esc(page.title)}"`)
