@@ -15,7 +15,8 @@ function esc(value = "") {
 
 function localHref(href = "") {
   try {
-    const url = new URL(href);
+    if (href.startsWith("#") || href.startsWith("mailto:") || href.startsWith("tel:")) return href;
+    const url = href.startsWith("/") ? new URL(href, "https://registrar.ucsf.edu") : new URL(href);
     if (url.hostname !== "registrar.ucsf.edu") return href;
     const page = pages.find((candidate) => candidate.path === url.pathname || `${candidate.path}/` === url.pathname);
     return page ? `${page.slug}.html` : href;
