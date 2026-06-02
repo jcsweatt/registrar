@@ -144,6 +144,90 @@ function registrarResources(page) {
 </div>`;
 }
 
+function pageForPath(path) {
+  return pages.find((page) => page.path.toLowerCase() === path.toLowerCase());
+}
+
+function menuSections() {
+  const sectionConfig = [
+    ["registration", "Registration", ["/registration/summer-2026-registration", "/registration/spring-2026-registration", "/registration/how-register", "/registration/fees", "/registration/paying-fees", "/registration/study-list-filing", "/registration/deadlineshome", "/registration/change-study-list", "/registration/residency", "/registration/withdrawal", "/registration/refunds", "/registration/readmission", "/registration/id-cards", "/registration/intercampus-exchange", "/registration/sf-consortium", "/registration/stanford-exchange", "/registration/reduced-fee-enrollment", "/registration/part-time-enrollment", "/registration/summer-session-info"]],
+    ["transcripts", "Transcripts", ["/transcripts/ordering-transcripts", "/transcripts/transcripts-fees", "/transcripts/transcript-request-forms", "/transcripts/transcript-pickup", "/transcripts/transcript-guide-and-grading-key", "/transcripts/catalogarchives"]],
+    ["diplomas", "Diplomas", ["/diplomas/diploma-overview", "/diplomas/how-obtain-your-diploma", "/diplomas/diploma-or-certificate-reissue", "/diplomas/diploma-certification-boards", "/diplomas/diploma-mailing-request-form", "/diplomas/access-electronic-systems-after-graduation"]],
+    ["verifications", "Verifications", ["/verifications/current-students", "/verifications/alumni", "/verifications/residency", "/verifications/employment-verification"]],
+    ["student-records", "Student Records", ["/student-records/name-change", "/student-records/preferred", "/student-records/substitution", "/student-records/examination", "/student-records/disclosure", "/student-records/grades", "/student-records/dns", "/student-records/nondisc", "/student-records/alumni-portal-access"]],
+    ["faculty-staff", "Faculty & Staff", ["/faculty-staff/faculty-portal-grading", "/faculty-staff/scheduling", "/faculty-staff/course-evaluations", "/faculty-staff/course-review", "/faculty-staff/degree-management-system", "/faculty-staff/ferpa-privacy", "/faculty-staff/ucsf-general-catalog", "/faculty-staff/student-information-system"]],
+    ["new-students", "New Students", ["/new-students/new-students-landing", "/new-students/studentportal", "/new-students/registration", "/new-students/general-catalog", "/new-students/financial-aid", "/new-students/its", "/new-students/food", "/new-students/housing", "/new-students/studenthealth", "/new-students/immunization", "/new-students/shipwaiver", "/new-students/student-disability-services", "/new-students/first-gen", "/new-students/guardian", "/new-students/weid", "/new-students/warnme", "/new-students/library", "/new-students/success", "/new-students/clery-act", "/new-students/tobacco-free-policies", "/new-students/useful-links"]],
+  ];
+
+  return sectionConfig.map(([id, title, paths]) => ({
+    id,
+    title,
+    items: paths.map(pageForPath).filter(Boolean),
+  }));
+}
+
+function registrarDesktopNav() {
+  return `<nav aria-label="Main" id="block-ucsf-main-menu-desktop" class="block block-menu navigation menu--main main-nav">
+  <ul block="block-ucsf-main-menu-desktop" class="main-nav__menu">
+    ${menuSections()
+      .map(
+        (section) => `<li class="menu-item menu-item--expanded main-nav__submenu-wrapper">
+      <button class="main-nav__toggle menu-item-${section.id}" aria-controls="aria-${section.id}-menu" aria-expanded=false>
+        ${esc(section.title)}
+      </button>
+      <div id="aria-${section.id}-menu" aria-labelledby="aria-label-${section.id}-menu" class="main-submenu main-submenu--0" data-level="level-0">
+        <button class="menu-item-close" aria-controls="aria-${section.id}-menu" aria-expanded=false>
+          Close ${esc(section.title)} menu.
+        </button>
+        <div data-section="section-${section.id}-menu" class="main-submenu__label main-submenu__label--0">
+          <span id="aria-label-${section.id}-menu" class="main-submenu__label-text">${esc(section.title)}</span>
+        </div>
+        <ul class="main-submenu__menu">
+          ${section.items
+            .map(
+              (item) => `<li class="menu-item">
+            <a href="${item.slug}.html"><span>${esc(item.title)}</span></a>
+          </li>`
+            )
+            .join("")}
+        </ul>
+      </div>
+    </li>`
+      )
+      .join("")}
+  </ul>
+</nav>`;
+}
+
+function registrarMobileNav() {
+  return `<nav aria-label="Main" id="block-ucsf-main-menu" class="block block-menu navigation menu--main main-menu--mobile main-nav">
+  <ul block="block-ucsf-main-menu" class="menu-parent-wrapper">
+    ${menuSections()
+      .map(
+        (section) => `<li class="menu-item menu-item--expanded">
+      <span class="main-navigation__link dropdown-menu__link">${esc(section.title)}</span>
+      <ul class="menu">
+        ${section.items
+          .map(
+            (item) => `<li class="menu-item">
+          <a href="${item.slug}.html" class="main-navigation__link dropdown-menu__link">${esc(item.title)}</a>
+        </li>`
+          )
+          .join("")}
+      </ul>
+    </li>`
+      )
+      .join("")}
+  </ul>
+</nav>`;
+}
+
+function replaceNavigation(template) {
+  return template
+    .replace(/<nav aria-label="Main"\s+id="block-ucsf-main-menu"[\s\S]*?<\/nav>/, registrarMobileNav())
+    .replace(/<nav aria-label="Main"\s+id="block-ucsf-main-menu-desktop"[\s\S]*?<\/nav>/, registrarDesktopNav());
+}
+
 function communicationShellPage(template, page) {
   const banner = `<header class="basic-header full-width-page-banner full-width-has-image ">
     <figure>
@@ -172,7 +256,7 @@ function communicationShellPage(template, page) {
   }
   const withRegistrarContent = `${template.slice(0, contentStart)}${banner}\n\n${body}\n${template.slice(contentEnd)}`;
   return absolutizeAssets(
-    withRegistrarContent
+    replaceNavigation(withRegistrarContent)
       .replace(/<title[^>]*>[\s\S]*?<\/title>/i, `<title>${esc(page.title)} | UC San Francisco</title>`)
       .replace(/Office of Communications/g, "Office of the Registrar")
       .replace(/<meta property="og:title" content="[^"]*"/i, `<meta property="og:title" content="${esc(page.title)}"`)
