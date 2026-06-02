@@ -25,8 +25,6 @@ function cleanHtml(html = "") {
     .replace(/<script[\s\S]*?<\/script>/gi, "")
     .replace(/<style[\s\S]*?<\/style>/gi, "")
     .replace(/<noscript[\s\S]*?<\/noscript>/gi, "")
-    .replace(/\s(?:class|id|data-[\w-]+|style|onclick)="[^"]*"/gi, "")
-    .replace(/\s(?:class|id|data-[\w-]+|style|onclick)='[^']*'/gi, "")
     .replace(/\s{2,}/g, " ")
     .trim();
 }
@@ -71,6 +69,13 @@ function extractMain(html) {
   return content ? content[0] : html.match(/<body[\s\S]*?<\/body>/i)?.[0] || html;
 }
 
+function extractArticleBody(html) {
+  const match = html.match(/(<div[^>]+field--name-field-body[\s\S]*?<\/div>)\s*<section[^>]+field--name-comment-node-page/i);
+  if (match) return cleanHtml(match[1]);
+  const fallback = html.match(/(<div[^>]+field--name-field-body[\s\S]*?<\/div>)/i);
+  return fallback ? cleanHtml(fallback[1]) : cleanHtml(extractMain(html));
+}
+
 function slugFor(url) {
   const { pathname } = new URL(url);
   if (pathname === "/") return "index";
@@ -95,6 +100,7 @@ while (queued.length && pages.length < maxPages) {
   try {
     const html = await fetchPage(url);
     const mainHtml = cleanHtml(extractMain(html));
+    const articleHtml = extractArticleBody(html);
     const title = extractFirst(html, /<title[^>]*>([\s\S]*?)<\/title>/i).replace(/\s*\|\s*Office of the Registrar\s*$/i, "");
     const h1 = extractFirst(mainHtml, /<h1[^>]*>([\s\S]*?)<\/h1>/i) || title || "Office of the Registrar";
     const summary = textOnly(mainHtml).split(". ").slice(0, 2).join(". ").slice(0, 240);
@@ -118,7 +124,9 @@ while (queued.length && pages.length < maxPages) {
       title: h1,
       pageTitle: title,
       summary,
+      fullHtml: html,
       bodyHtml: mainHtml,
+      articleHtml,
       links,
     });
     console.log(`captured ${pages.length}: ${url}`);

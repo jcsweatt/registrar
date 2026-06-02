@@ -2,7 +2,7 @@
 
 ## Reference Structure Used
 
-The Office of Communications page was used as a structural and layout reference only. The redesigned Registrar site uses a UCSF-style institutional top bar, department masthead, large introductory hero, prominent service navigation, sidebar exploration, main content column, and related-page card sections.
+The Office of Communications page was used as the structural and layout reference. The redesigned Registrar site keeps the Communications-style UCSF header, navigation behavior, full-width banner, content-panel layout, and footer shell, then replaces the Communications page title, intro text, resource panels, and body content with Registrar content.
 
 ## Registrar Content Mapping
 
@@ -14,7 +14,7 @@ Registrar content was grouped into service-oriented sections:
 - Faculty/Staff and New Students pages remain preserved as individual pages and are surfaced through related cards.
 - Forms and policy-oriented pages map to Forms & Policies.
 
-Pages that did not map cleanly to a small Office of Communications-style hierarchy were preserved as individual static pages and exposed through related-page cards rather than forced into a misleading navigation bucket.
+Pages that did not map cleanly to the Communications page structure were preserved as individual static pages. Each page uses the same Communications shell and receives Registrar-specific resource panels plus the captured Registrar page body.
 
 ## Internal Links
 

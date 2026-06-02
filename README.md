@@ -14,9 +14,19 @@ The crawl was bounded and did not mirror every binary asset. It skipped obvious 
 
 The redesigned development version is on:
 
-`dev-redesign-office-of-communications-structure`
+`dev-redesign-oar`
 
-The redesign uses the Registrar content captured from the live site and adapts it into a UCSF Office of Communications-inspired structure: institutional top bar, large department hero, prominent service navigation, sidebar exploration, content body, and related page cards.
+The redesign uses the Registrar content captured from the live site and places it into the UCSF Office of Communications page structure, preserving the Communications-style UCSF header, navigation behavior, full-width banner, content panels, and footer shell.
+
+## Live Preview
+
+Current Registrar recreation:
+
+<https://jcsweatt.github.io/registrar/>
+
+Redesign:
+
+<https://jcsweatt.github.io/registrar/dev-redesign-oar/>
 
 ## Local Preview
 
